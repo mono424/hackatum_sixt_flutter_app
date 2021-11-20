@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_geocoder/geocoder.dart';
 import 'package:get/get.dart';
 import 'package:hackatum_sixt_flutter_app/global_state.dart';
+import 'package:hackatum_sixt_flutter_app/screens/settings_screen.dart';
 
 Future<Position> _determinePosition() async {
   bool serviceEnabled;
@@ -94,7 +95,14 @@ class _LocationInfoState extends State<LocationInfo> {
               ),
               padding: EdgeInsets.all(4),
               clipBehavior: Clip.antiAlias,
-              child: Image.asset("assets/images/sixt_logo.png")
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SettingsScreen()),
+                    );
+                  },
+                  child: Image.asset("assets/images/sixt_logo.png")),
             ),
           ),
           Expanded(child: SizedBox()),
