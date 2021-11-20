@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
               height: 120,
               child: Swiper(
                   itemCount: 2,
-                  viewportFraction: 0.88,
+                  viewportFraction: 0.90,
                   scale: 0.95,
                   loop: false,
                   itemBuilder: (BuildContext context, int index) {
