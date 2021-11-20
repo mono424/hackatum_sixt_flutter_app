@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hackatum_sixt_flutter_app/global_state.dart';
@@ -32,6 +33,9 @@ class GMapState extends State<GMap> {
         );
       }
     });
+    rootBundle.loadString('assets/maps/style.json').then((string) async {
+      (await _controller.future).setMapStyle(string);
+    });
     super.initState();
   }
 
@@ -39,7 +43,7 @@ class GMapState extends State<GMap> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GoogleMap(
-        mapType: MapType.hybrid,
+        zoomControlsEnabled: false,
         initialCameraPosition: _kGooglePlex,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
