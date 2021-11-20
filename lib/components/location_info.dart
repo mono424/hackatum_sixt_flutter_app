@@ -12,8 +12,20 @@ class LocationInfo extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SizedBox(width: 9),
-          IconButton(onPressed: () {}, icon: Icon(Icons.info_outline_rounded), iconSize: 24, color: Colors.black),
+          SizedBox(width: 4),
+          TextButton(
+            onPressed: () {},
+            child: Container(
+              width: 60,
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(35, 31, 32, 1),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              padding: EdgeInsets.all(4),
+              clipBehavior: Clip.antiAlias,
+              child: Image.asset("assets/images/sixt_logo.png")
+            ),
+          ),
           Expanded(child: SizedBox()),
           Column(
             children: [
@@ -23,6 +35,7 @@ class LocationInfo extends StatelessWidget {
             ],
           ),
           Expanded(child: SizedBox()),
+          SizedBox(width: 34),
           IconButton(onPressed: () {}, icon: Icon(Icons.my_location_rounded), iconSize: 24, color: Colors.black),
           SizedBox(width: 9),
         ],
