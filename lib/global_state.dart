@@ -5,6 +5,6 @@ abstract class GlobalState {
 
   static final currentPosition = Rxn<Position>();
   static final currentPositionAddress = "Search Location".obs;
-  static final currentPositionCountryName = "To find a RoboTaxi Ride".obs;
+  static final currentPositionCountryName = "to find a RoboTaxi Ride".obs;
 
 }
