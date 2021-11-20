@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hackatum_sixt_flutter_app/global_state.dart';
 
 class GMap extends StatefulWidget {
   @override
@@ -23,8 +24,20 @@ class GMapState extends State<GMap> {
       zoom: 19.151926040649414);
 
   @override
+  void initState() {
+    GlobalState.currentPosition.listen((p) async {
+      if (p != null) {
+        (await _controller.future).moveCamera(
+          CameraUpdate.newLatLngZoom(LatLng(p.latitude, p.longitude), 17)
+        );
+      }
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       body: GoogleMap(
         mapType: MapType.hybrid,
         initialCameraPosition: _kGooglePlex,

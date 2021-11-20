@@ -30,7 +30,7 @@ class HomeScreen extends StatelessWidget {
               child: Swiper(
                   itemCount: 2,
                   viewportFraction: 0.90,
-                  scale: 0.95,
+                  scale: 0.9,
                   loop: false,
                   itemBuilder: (BuildContext context, int index) {
                     if (index == 0) return StartTravelInput();
