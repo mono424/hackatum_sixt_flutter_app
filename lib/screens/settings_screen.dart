@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hackatum_sixt_flutter_app/screens/home_screen.dart';
 
-
-class LogIn extends StatefulWidget {
+class SettingsScreen extends StatefulWidget {
 
   @override
-  _LogIn createState() => _LogIn();
+  _SettingsScreen createState() => _SettingsScreen();
 }
 
-class _LogIn extends State<LogIn> {
+class _SettingsScreen extends State<SettingsScreen> {
 
   @override
   void initState(){
@@ -27,8 +25,8 @@ class _LogIn extends State<LogIn> {
       backgroundColor: Colors.black,
       body: Center(
         child: Stack(
-            children: <Widget>[
-          Column(
+          children: <Widget>[
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
@@ -84,10 +82,10 @@ class _LogIn extends State<LogIn> {
 
                         ),
                         onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => HomeScreen()),
-                            );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomeScreen()),
+                          );
                         },
 
                         label: Text('Book your ride'),
@@ -95,7 +93,7 @@ class _LogIn extends State<LogIn> {
                       Spacer(),
 
 
-              ]),
+                    ]),
                 Text(
                   '',
                   style: TextStyle(height: 4.5, fontSize: 30),
@@ -103,8 +101,8 @@ class _LogIn extends State<LogIn> {
 
               ],
 
-          ),
-        ],
+            ),
+          ],
         ),
       ),
 
