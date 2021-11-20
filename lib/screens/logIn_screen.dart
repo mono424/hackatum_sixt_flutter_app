@@ -35,7 +35,7 @@ class _LogIn extends State<LogIn> {
                   '',
                   style: TextStyle(height: 0.5, fontSize: 20),
                 ),
-                Image.asset("assets/images/sixt_logo.png", alignment: Alignment.center, scale: 1.5),
+                Image.asset("assets/images/sixt_logo.png", alignment: Alignment.center, scale: 2.2),
                 Text(
                   '',
                   style: TextStyle(height: 2.5, fontSize: 30),
