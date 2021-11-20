@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hackatum_sixt_flutter_app/global_state.dart';
@@ -40,25 +41,97 @@ class _RideSummaryState extends State<RideSummary> {
     );
   }
 
-  void getRide() async {
+  void searchTaxi() async {
     setState(() {
       isLoading = true;
     });
-    BookingModel booking = await ApiService.createBooking(
-      GlobalState.currentPosition.value!.latitude,
-      GlobalState.currentPosition.value!.longitude,
-      widget.destination.lat,
-      widget.destination.lng,
-    );
-    GlobalState.currentBooking(booking);
+    try {
+      BookingModel booking = await ApiService.createBooking(
+        GlobalState.currentPosition.value!.latitude,
+        GlobalState.currentPosition.value!.longitude,
+        widget.destination.lat,
+        widget.destination.lng,
+      );
+      GlobalState.currentBooking(booking);
+    } catch (_) {
+      BotToast.showSimpleNotification(title: "Something went wrong 😿");
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void confirmTaxi() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      BookingModel booking = GlobalState.currentBooking.value!;
+      await ApiService.confirmBooking(booking.bookingID);
+      booking.isConfirmed = true;
+      GlobalState.currentBooking(booking);
+    } catch (e) {
+      BotToast.showSimpleNotification(title: "Something went wrong 😿");
+    }
     setState(() {
       isLoading = false;
     });
   }
 
   Widget childContent() {
+    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.isConfirmed) {
+      return Column(
+        children: [
+          Text("Awesome your robotaxi is booked !! Whoop!"),
+        ]
+      );
+    }
+
     if (GlobalState.currentBooking.value != null) {
-      return Text("*Placeholder* Created Booking :)");
+      int minutes = GlobalState.currentBooking.value!.suggestedVehicleTimeToTravelToPickupLocation ~/ 60;
+      return Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(width: 32),
+              Text("Book Sixt RoboTaxi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+              IconButton(onPressed: widget.onCancel, icon: Icon(Icons.close))
+            ],
+          ),
+          Expanded(child: SizedBox()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("RoboTaxi will pick you up in", style: TextStyle(fontSize: 14, color: Colors.black54))
+            ]
+          ),
+          SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(minutes.toString() + " minutes", style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+            ]
+          ),
+          Expanded(child: SizedBox()),
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(32))),
+                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
+                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 18)),
+                  ),
+                  onPressed: confirmTaxi,
+                  child: Text("CONFIRM ROBOTAXI", style: TextStyle( color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+        ],
+      );
     }
 
     return Column(
@@ -86,8 +159,8 @@ class _RideSummaryState extends State<RideSummary> {
                   backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
                   padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 18)),
                 ),
-                onPressed: getRide,
-                child: Text("GET THE RIDE", style: TextStyle( color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))
+                onPressed: searchTaxi,
+                child: Text("SEARCH ROBOTAXI", style: TextStyle( color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))
               ),
             ),
           ],

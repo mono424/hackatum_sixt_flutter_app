@@ -1,11 +1,12 @@
 class BookingModel {
-  final String id; 
+  final String bookingID; 
   final double pickupLat;
   final double pickupLng;
   final double destinationLat;
   final double destinationLng;
   final String suggestedVehicleID;
-  final String suggestedVehicleTimeToTravelToPickupLocation;
+  final double suggestedVehicleTimeToTravelToPickupLocation;
+  bool isConfirmed = false;
 
-  BookingModel(this.id, this.pickupLat, this.pickupLng, this.destinationLat, this.destinationLng, this.suggestedVehicleID, this.suggestedVehicleTimeToTravelToPickupLocation);
+  BookingModel(this.bookingID, this.pickupLat, this.pickupLng, this.destinationLat, this.destinationLng, this.suggestedVehicleID, this.suggestedVehicleTimeToTravelToPickupLocation);
 }

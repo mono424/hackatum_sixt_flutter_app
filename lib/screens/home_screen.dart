@@ -4,6 +4,7 @@ import 'package:hackatum_sixt_flutter_app/components/location_info.dart';
 import 'package:flutter/material.dart';
 import 'package:hackatum_sixt_flutter_app/components/ride_summary.dart';
 import 'package:hackatum_sixt_flutter_app/components/start_travel_input.dart';
+import 'package:hackatum_sixt_flutter_app/global_state.dart';
 import 'package:hackatum_sixt_flutter_app/models/ride_destination_model.dart';
 import 'package:hackatum_sixt_flutter_app/screens/start_pick_screen.dart';
 import 'package:hackatum_sixt_flutter_app/screens/start_ride_screen.dart';
@@ -50,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             setState(() {
               rideDestination = null;
             });
+            GlobalState.currentBooking.trigger(null);
           },
         ),
       );

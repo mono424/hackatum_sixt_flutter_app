@@ -18,13 +18,21 @@ abstract class ApiService {
     Map<String, dynamic> result = response.data;
     
     return BookingModel(
-      result['ID'],
+      result['bookingID'],
       result['pickupLat'],
       result['pickupLng'],
       result['destinationLat'],
       result['destinationLng'],
       result['suggestedVehicleID'],
       result['suggestedVehicleTimeToTravelToPickupLocation'],
+    );
+  }
+
+  static Future<void> confirmBooking(String bookingID) async {
+    await dio.post(baseUrl + "/confirmBooking",
+      data: {
+        'bookingID': bookingID,
+      },
     );
   }
 
