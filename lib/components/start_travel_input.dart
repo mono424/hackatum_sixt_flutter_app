@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class StartTravelInput extends StatefulWidget {
-  const StartTravelInput({Key? key, this.hint = "Where are you going?", this.onPressed, this.focused = false}) : super(key: key);
+  const StartTravelInput({Key? key, this.hint = "Where are you going?", this.onPressed, this.focused = false, this.onInput}) : super(key: key);
 
   final String hint;
   final VoidCallback? onPressed;
+  final Function(String)? onInput;
   final bool focused;
 
   @override
@@ -14,6 +16,7 @@ class StartTravelInput extends StatefulWidget {
 class _StartTravelInputState extends State<StartTravelInput> {
   final TextEditingController _controller = TextEditingController();
   final focusNode = FocusNode();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -22,6 +25,21 @@ class _StartTravelInputState extends State<StartTravelInput> {
       if (focusNode.hasFocus) return;
       focusNode.requestFocus();
     }));
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1000), () {
+        if (widget.onInput != null) {
+          widget.onInput!(_controller.text);
+        }
+    });
   }
 
   @override
@@ -46,6 +64,7 @@ class _StartTravelInputState extends State<StartTravelInput> {
                 focusNode: focusNode,
                 enabled: widget.onPressed == null,
                 controller: _controller,
+                onChanged: _onSearchChanged,
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.black                  
@@ -60,7 +79,7 @@ class _StartTravelInputState extends State<StartTravelInput> {
             ),
             Container(
               decoration: BoxDecoration(
-                color: Colors.black87,
+                color: Color.fromRGBO(238, 127, 0, 0.8),
                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
               ),
               margin: EdgeInsets.only(left: 12, right: 12),

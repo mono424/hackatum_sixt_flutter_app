@@ -27,6 +27,11 @@ class _AppRouterState extends State<AppRouter> {
       builder: BotToastInit(),
       navigatorKey: NavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.light(
+          primary: Color.fromRGBO(238, 127, 0, 1),
+        ),
+      ),
       onGenerateRoute: (settings) {        
         if (settings.name == '/') {
           return MaterialPageRoute(builder: (context) => LogIn());
