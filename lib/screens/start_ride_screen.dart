@@ -25,7 +25,8 @@ class _StartRideScreenState extends State<StartRideScreen> {
         children: [
           Hero(tag: "destinput-ride", child: StartTravelInput(focused: true, onInput: onInput)),
           query.value == "" ? SizedBox() : Expanded(child: PlacesList(
-            query: query
+            query: query,
+            onSelect: (s) => Navigator.pop(context, s),
           ))
         ],
       ))
