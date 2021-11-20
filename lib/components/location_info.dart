@@ -86,7 +86,12 @@ class _LocationInfoState extends State<LocationInfo> {
         children: [
           SizedBox(width: 4),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
+            },
             child: Container(
               width: 60,
               decoration: BoxDecoration(
@@ -95,15 +100,7 @@ class _LocationInfoState extends State<LocationInfo> {
               ),
               padding: EdgeInsets.all(4),
               clipBehavior: Clip.antiAlias,
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SettingsScreen()),
-                    );
-                  },
-                  child: Image.asset("assets/images/sixt_logo.png")),
-            ),
+              child: Image.asset("assets/images/sixt_logo.png")),
           ),
           Expanded(child: SizedBox()),
           Obx(() => Column(
