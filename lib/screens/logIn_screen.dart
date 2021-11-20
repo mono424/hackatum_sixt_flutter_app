@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hackatum_sixt_flutter_app/screens/choose_screen.dart';
 import 'package:hackatum_sixt_flutter_app/screens/home_screen.dart';
 
 
@@ -86,7 +87,7 @@ class _LogIn extends State<LogIn> {
                         onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => HomeScreen()),
+                              MaterialPageRoute(builder: (context) => ChooseScreen()),
                             );
                         },
 
