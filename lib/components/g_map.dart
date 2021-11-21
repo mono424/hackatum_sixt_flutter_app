@@ -41,7 +41,7 @@ class GMapState extends State<GMap> {
       if(roboTaxiTracker != null) roboTaxiTracker!.cancel();
       if (p != null) {
         updateRoboTaxiPosition();
-        roboTaxiTracker = Timer(Duration(seconds: 5), updateRoboTaxiPosition);
+        roboTaxiTracker = Timer(Duration(seconds: 2), updateRoboTaxiPosition);
       }
     });
     rootBundle.loadString('assets/maps/style.json').then((string) async {
