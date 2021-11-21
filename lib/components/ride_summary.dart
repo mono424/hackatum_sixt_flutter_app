@@ -178,7 +178,7 @@ class _RideSummaryState extends State<RideSummary> {
 
     if (bookingModel != null && bookingModel.status == RideStatus.approaching_destination) {
       return Obx(() {
-        int mins = GlobalState.distanceToDestination.value ~/ 100;
+        int mins = GlobalState.distanceToDestination.value ~/ 1000;
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -250,7 +250,7 @@ class _RideSummaryState extends State<RideSummary> {
 
     if (bookingModel != null && bookingModel.status == RideStatus.confirmed) {
       return Obx(() {
-        int mins = GlobalState.lastBookedCarDistance.value ~/ 100;
+        int mins = GlobalState.lastBookedCarDistance.value ~/ 1000;
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
