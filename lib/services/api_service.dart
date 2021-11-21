@@ -29,11 +29,11 @@ abstract class ApiService {
   }
 
   static Future<void> confirmBooking(String bookingID) async {
-    await dio.post(baseUrl + "/confirmBooking",
-      data: {
-        'bookingID': bookingID,
-      },
-    );
+    await dio.post(baseUrl + "/confirmBooking?bookingID=" + bookingID);
+  }
+
+  static Future<void> getVehicleLocation(String vehicleId) async {
+    await dio.get(baseUrl + "/getVehicleLocation?vehicleId=" + vehicleId);
   }
 
 }
