@@ -78,10 +78,12 @@ class GMapState extends State<GMap> {
 
       if (GlobalState.currentBooking.value!.status == RideStatus.confirmed && GlobalState.lastBookedCarDistance.value < 100) {
         GlobalState.currentBooking.value!.status = RideStatus.taxi_arrived_pickup;
+        GlobalState.currentBooking.trigger(GlobalState.currentBooking.value);
       }
 
       if (GlobalState.currentBooking.value!.status == RideStatus.approaching_destination && GlobalState.distanceToDestination.value < 100) {
         GlobalState.currentBooking.value!.status = RideStatus.taxi_arrived_destination;
+        GlobalState.currentBooking.trigger(GlobalState.currentBooking.value);
       }
 
       updateCarMarker();
