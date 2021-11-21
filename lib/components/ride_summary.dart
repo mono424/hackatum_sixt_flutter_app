@@ -79,6 +79,12 @@ class _RideSummaryState extends State<RideSummary> {
     });
   }
 
+  void leaveRide() async {
+    BookingModel booking = GlobalState.currentBooking.value!;
+    booking.status = RideStatus.taxi_arrived_destination;
+    GlobalState.currentBooking.trigger(booking);
+  }
+
   void endRide() async {
     setState(() {
       isLoading = true;
@@ -126,7 +132,7 @@ class _RideSummaryState extends State<RideSummary> {
             ],
           ),
           SizedBox(height: 48),
-          Expanded(child: Image.asset("assets/images/sixt_car.png")),
+          Text("🎉", style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
           SizedBox(height: 48),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -199,7 +205,7 @@ class _RideSummaryState extends State<RideSummary> {
                 backgroundColor: MaterialStateProperty.all(Colors.redAccent),
                 padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 12, horizontal: 24)),
               ),
-              onPressed: endRide,
+              onPressed: leaveRide,
               child: Text("I WANT TO LEAVE NOW", style: TextStyle( color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold))
             ),
             SizedBox(height: 7),
@@ -301,6 +307,13 @@ class _RideSummaryState extends State<RideSummary> {
             ]
           ),
           Expanded(child: SizedBox()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("we will beam it to you in a couple of seconds", style: TextStyle(fontSize: 14, color: Colors.black26))
+            ]
+          ),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(
