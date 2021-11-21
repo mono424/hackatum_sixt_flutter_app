@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hackatum_sixt_flutter_app/models/booking_model.dart';
 
 abstract class ApiService {
@@ -32,8 +33,17 @@ abstract class ApiService {
     await dio.post(baseUrl + "/confirmBooking?bookingID=" + bookingID);
   }
 
-  static Future<void> getVehicleLocation(String vehicleId) async {
-    await dio.get(baseUrl + "/getVehicleLocation?vehicleId=" + vehicleId);
+  static Future<void> passengerGotOn(String bookingID) async {
+    await dio.post(baseUrl + "/passengerGotOn?bookingID=" + bookingID);
+  }
+
+  static Future<void> passengerGotOff(String bookingID, double lat, double lng) async {
+    await dio.post(baseUrl + "/passengerGotOff?bookingID=" + bookingID + "&latitude=" + lat.toString() + "&longitude=" + lng.toString());
+  }
+
+  static Future<LatLng> getVehicleLocation(String vehicleId) async {
+    final res = await dio.get(baseUrl + "/getVehiclePosition?vehicleID=" + vehicleId);
+    return LatLng(res.data['lat'], res.data['lng']);
   }
 
 }

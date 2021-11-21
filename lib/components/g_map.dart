@@ -1,8 +1,10 @@
+import 'dart:math' show cos, sqrt, asin;
 import 'dart:async';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hackatum_sixt_flutter_app/enum/ride_status.dart';
 import 'package:hackatum_sixt_flutter_app/global_state.dart';
 import 'package:hackatum_sixt_flutter_app/services/api_service.dart';
 
@@ -41,7 +43,7 @@ class GMapState extends State<GMap> {
       if(roboTaxiTracker != null) roboTaxiTracker!.cancel();
       if (p != null) {
         updateRoboTaxiPosition();
-        roboTaxiTracker = Timer(Duration(seconds: 2), updateRoboTaxiPosition);
+        roboTaxiTracker = Timer.periodic(Duration(seconds: 2), (_) => updateRoboTaxiPosition());
       }
     });
     rootBundle.loadString('assets/maps/style.json').then((string) async {
@@ -51,23 +53,55 @@ class GMapState extends State<GMap> {
   }
 
   void updateRoboTaxiPosition() async {
-    if (GlobalState.currentBooking.value == null) {
-      updateCarMarker();
-      return;
-    }
-    // ApiService.getVehicleLocation(GlobalState.currentBooking.value!.suggestedVehicleID);
-    (await _controller.future).moveCamera(
-      CameraUpdate.newLatLngZoom(LatLng(48.173452, 11.585667), 17)
-    );
-    updateCarMarker(LatLng(48.173452, 11.585667));
+   try {
+      if (GlobalState.currentBooking.value == null) {
+        updateCarMarker();
+        return;
+      }
+      final coords = await ApiService.getVehicleLocation(GlobalState.currentBooking.value!.suggestedVehicleID);
+      (await _controller.future).moveCamera(
+        CameraUpdate.newLatLngZoom(coords, 17)
+      );
+      GlobalState.lastBookedCarPosition(coords);
+      GlobalState.lastBookedCarDistance(calculateDistance(
+        coords.latitude,
+        coords.longitude,
+        GlobalState.currentPosition.value!.latitude,
+        GlobalState.currentPosition.value!.longitude
+      ));
+      GlobalState.distanceToDestination(calculateDistance(
+        coords.latitude,
+        coords.longitude,
+        GlobalState.currentBooking.value!.destinationLat,
+        GlobalState.currentBooking.value!.destinationLng
+      ));
+
+      if (GlobalState.currentBooking.value!.status == RideStatus.confirmed && GlobalState.lastBookedCarDistance.value < 100) {
+        GlobalState.currentBooking.value!.status = RideStatus.taxi_arrived_pickup;
+      }
+
+      if (GlobalState.currentBooking.value!.status == RideStatus.approaching_destination && GlobalState.distanceToDestination.value < 100) {
+        GlobalState.currentBooking.value!.status = RideStatus.taxi_arrived_destination;
+      }
+    } catch (_) {}
   }
 
-  void updateCarMarker([LatLng? pos]) async {
+  double calculateDistance(lat1, lng1, lat2, lng2){
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lng2 - lng1) * p))/2;
+    return 12742 * asin(sqrt(a)) * 1000;
+  }
+
+  void updateCarMarker() async {
+    final pos = GlobalState.lastBookedCarPosition.value;
     setState(() {
       customMarkers = customMarkers.where((m) => m.markerId.value != "taxi_marker").toList();
     });
-    if (pos == null) return;
 
+    if (pos == null) return;
 
     final icon = await BitmapDescriptor.fromAssetImage(
       ImageConfiguration(size: Size(100, 100)),
@@ -75,7 +109,7 @@ class GMapState extends State<GMap> {
     );
     setState(() {
       customMarkers.add(Marker( 
-        markerId: MarkerId("pickup_marker"),
+        markerId: MarkerId("taxi_marker"),
         position: LatLng(pos.latitude, pos.longitude),
         icon: icon,
       ));
@@ -106,7 +140,7 @@ class GMapState extends State<GMap> {
       body: GoogleMap(
         zoomControlsEnabled: false,
         initialCameraPosition: _kGooglePlex,
-        markers: customMarkers.toSet(),
+        markers: customMarkers.reversed.toSet(),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },

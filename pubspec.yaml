@@ -78,6 +78,7 @@ flutter:
     - assets/images/gather_guy.png
     - assets/images/marker.png
     - assets/images/marker_car.png
+    - assets/images/sixt_car.png
     - assets/maps/style.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

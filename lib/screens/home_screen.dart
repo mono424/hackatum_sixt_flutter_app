@@ -57,8 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-
-
     return Positioned(
       bottom: 54,
       right: 0,

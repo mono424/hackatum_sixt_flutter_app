@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hackatum_sixt_flutter_app/enum/ride_status.dart';
 import 'package:hackatum_sixt_flutter_app/global_state.dart';
 import 'package:hackatum_sixt_flutter_app/models/booking_model.dart';
 
@@ -68,7 +69,41 @@ class _RideSummaryState extends State<RideSummary> {
     try {
       BookingModel booking = GlobalState.currentBooking.value!;
       await ApiService.confirmBooking(booking.bookingID);
-      booking.isConfirmed = true;
+      booking.status = RideStatus.confirmed;
+      GlobalState.currentBooking(booking);
+    } catch (e) {
+      BotToast.showSimpleNotification(title: "Something went wrong 😿");
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void endRide() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      BookingModel booking = GlobalState.currentBooking.value!;
+      await ApiService.passengerGotOff(booking.bookingID, GlobalState.lastBookedCarPosition.value!.latitude, GlobalState.lastBookedCarPosition.value!.longitude);
+      booking.status = RideStatus.ride_ended;
+      GlobalState.currentBooking(booking);
+    } catch (e) {
+      BotToast.showSimpleNotification(title: "Something went wrong 😿");
+    }
+    setState(() {
+      isLoading = false;
+    });
+  } 
+
+  void startRide() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      BookingModel booking = GlobalState.currentBooking.value!;
+      await ApiService.passengerGotOn(booking.bookingID);
+      booking.status = RideStatus.approaching_destination;
       GlobalState.currentBooking(booking);
     } catch (e) {
       BotToast.showSimpleNotification(title: "Something went wrong 😿");
@@ -79,12 +114,161 @@ class _RideSummaryState extends State<RideSummary> {
   }
 
   Widget childContent() {
-    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.isConfirmed) {
+    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.ride_ended) {
       return Column(
         children: [
-          Text("Awesome your robotaxi is booked !! Whoop!"),
-        ]
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(width: 32),
+              Text("Sixt RoboTaxi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+              IconButton(onPressed: widget.onCancel, icon: Icon(Icons.close))
+            ],
+          ),
+          Expanded(child: SizedBox()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Thanks for riding with us", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+            ],
+          ),
+          SizedBox(height: 32),
+          Expanded(child: SizedBox()),
+        ],
       );
+    }
+
+    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.taxi_arrived_destination) {
+      return Column(
+        children: [
+          Expanded(child: SizedBox()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("You arrived at your destination", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+            ],
+          ),
+          Expanded(child: SizedBox()),
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(32))),
+                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
+                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 18)),
+                  ),
+                  onPressed: endRide,
+                  child: Text("I AM OUTSIDE THE CAR, END RIDE", style: TextStyle( color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+        ],
+      );
+    }
+
+    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.approaching_destination) {
+      return Obx(() {
+        int mins = GlobalState.distanceToDestination.value ~/ 100;
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 32),
+            Expanded(child: Image.asset("assets/images/sixt_car.png")),
+            SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("RoboTaxi is approaching destination", style: TextStyle(fontSize: 14, color: Colors.black54))
+              ]
+            ),
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(mins.toString() + " min", style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+              ]
+            ),
+            SizedBox(height: 24),
+            TextButton(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(32))),
+                backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+                padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 12, horizontal: 24)),
+              ),
+              onPressed: endRide,
+              child: Text("I WANT TO LEAVE NOW", style: TextStyle( color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold))
+            ),
+            SizedBox(height: 7),
+          ],
+        );
+      });
+    }
+
+
+    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.taxi_arrived_pickup) {
+      return Column(
+        children: [
+          Expanded(child: SizedBox()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Get in your RoboTaxi, its there!", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+            ],
+          ),
+          Expanded(child: SizedBox()),
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(32))),
+                    backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
+                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 18)),
+                  ),
+                  onPressed: startRide,
+                  child: Text("I AM INSIDE, START RIDE !", style: TextStyle( color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+        ],
+      );
+    }
+
+    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.confirmed) {
+      return Obx(() {
+        int mins = GlobalState.lastBookedCarDistance.value ~/ 100;
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                SizedBox(width: 64),
+                Expanded(child: Image.asset("assets/images/sixt_car.png")),
+                SizedBox(width: 64),
+              ],
+            ),
+            SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("RoboTaxi is approaching you", style: TextStyle(fontSize: 14, color: Colors.black54))
+              ]
+            ),
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(mins.toString() + " min", style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+              ]
+            ),
+          ],
+        );
+      });
     }
 
     if (GlobalState.currentBooking.value != null) {
