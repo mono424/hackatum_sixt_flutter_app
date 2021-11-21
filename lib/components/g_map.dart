@@ -83,6 +83,8 @@ class GMapState extends State<GMap> {
       if (GlobalState.currentBooking.value!.status == RideStatus.approaching_destination && GlobalState.distanceToDestination.value < 100) {
         GlobalState.currentBooking.value!.status = RideStatus.taxi_arrived_destination;
       }
+
+      updateCarMarker();
     } catch (_) {}
   }
 
@@ -140,7 +142,7 @@ class GMapState extends State<GMap> {
       body: GoogleMap(
         zoomControlsEnabled: false,
         initialCameraPosition: _kGooglePlex,
-        markers: customMarkers.reversed.toSet(),
+        markers: customMarkers.toSet(),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },

@@ -113,8 +113,8 @@ class _RideSummaryState extends State<RideSummary> {
     });
   }
 
-  Widget childContent() {
-    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.ride_ended) {
+  Widget childContent(BookingModel? bookingModel) {
+    if (bookingModel != null && bookingModel.status == RideStatus.ride_ended) {
       return Column(
         children: [
           Row(
@@ -125,20 +125,21 @@ class _RideSummaryState extends State<RideSummary> {
               IconButton(onPressed: widget.onCancel, icon: Icon(Icons.close))
             ],
           ),
-          Expanded(child: SizedBox()),
+          SizedBox(height: 48),
+          Expanded(child: Image.asset("assets/images/sixt_car.png")),
+          SizedBox(height: 48),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Thanks for riding with us", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+              Text("Thanks for riding with us!", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
             ],
           ),
           SizedBox(height: 32),
-          Expanded(child: SizedBox()),
         ],
       );
     }
 
-    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.taxi_arrived_destination) {
+    if (bookingModel != null && bookingModel.status == RideStatus.taxi_arrived_destination) {
       return Column(
         children: [
           Expanded(child: SizedBox()),
@@ -169,7 +170,7 @@ class _RideSummaryState extends State<RideSummary> {
       );
     }
 
-    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.approaching_destination) {
+    if (bookingModel != null && bookingModel.status == RideStatus.approaching_destination) {
       return Obx(() {
         int mins = GlobalState.distanceToDestination.value ~/ 100;
         return Column(
@@ -208,17 +209,19 @@ class _RideSummaryState extends State<RideSummary> {
     }
 
 
-    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.taxi_arrived_pickup) {
+    if (bookingModel != null && bookingModel.status == RideStatus.taxi_arrived_pickup) {
       return Column(
         children: [
-          Expanded(child: SizedBox()),
+          SizedBox(height: 32),
+          Expanded(child: Image.asset("assets/images/sixt_car.png")),
+          SizedBox(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("Get in your RoboTaxi, its there!", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
             ],
           ),
-          Expanded(child: SizedBox()),
+          SizedBox(height: 32),
           Row(
             children: [
               Expanded(
@@ -239,7 +242,7 @@ class _RideSummaryState extends State<RideSummary> {
       );
     }
 
-    if (GlobalState.currentBooking.value != null && GlobalState.currentBooking.value!.status == RideStatus.confirmed) {
+    if (bookingModel != null && bookingModel.status == RideStatus.confirmed) {
       return Obx(() {
         int mins = GlobalState.lastBookedCarDistance.value ~/ 100;
         return Column(
@@ -271,8 +274,8 @@ class _RideSummaryState extends State<RideSummary> {
       });
     }
 
-    if (GlobalState.currentBooking.value != null) {
-      int minutes = GlobalState.currentBooking.value!.suggestedVehicleTimeToTravelToPickupLocation ~/ 60;
+    if (bookingModel != null) {
+      int minutes = bookingModel.suggestedVehicleTimeToTravelToPickupLocation ~/ 60;
       return Column(
         children: [
           Row(
@@ -376,7 +379,7 @@ class _RideSummaryState extends State<RideSummary> {
         height: 32,
         child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
       )
-    ) : childContent();
+    ) : Obx(() => childContent(GlobalState.currentBooking.value));
 
     return Container(
         height: 354,
